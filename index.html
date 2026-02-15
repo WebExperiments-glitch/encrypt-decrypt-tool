@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加密解密工具</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="warning-popup" class="warning-popup">
+        <div class="popup-content">
+            <h2>⚠️⚠️⚠️ 性能警告</h2>
+            <p>由于源网站的CSS特效太多，消耗了太多CSS动画（英特尔酷睿Ultra5 125H 核显GPU占用&lt;90%，若没有太多GPU资源，请选择无特效版）</p>
+            <div class="popup-buttons">
+                <button id="effects-version" class="popup-btn effects">有特效版</button>
+                <button id="no-effects-version" class="popup-btn no-effects">无特效版</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <header>
+            <h1 class="title">🔐 加密解密工具</h1>
+            <div class="theme-switcher">
+                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
+                <button class="theme-btn" data-theme="dark" title="深色模式">🌙</button>
+                <button class="theme-btn" data-theme="system" title="跟随系统">💻</button>
+                <button id="toggle-effects" class="theme-btn" title="切换特效版本">✨</button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="text">文本加密</button>
+            <button class="tab-btn" data-tab="image">图片处理</button>
+        </nav>
+
+        <main class="content">
+            <section id="text-tab" class="tab-content active">
+                <div class="tool-selector">
+                    <select id="tool-select">
+                        <option value="base64">Base64</option>
+                        <option value="url">URL 编码</option>
+                        <option value="html">HTML 实体</option>
+                        <option value="hex">Hex 十六进制</option>
+                        <option value="binary">二进制</option>
+                    </select>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="encode-btn" class="action-btn primary">
+                        加密
+                        <div class="hoverEffect">
+                            <div></div>
+                        </div>
+                    </button>
+                    <button id="decode-btn" class="action-btn secondary">
+                        解密
+                        <div class="hoverEffect">
+                            <div></div>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="io-container">
+                    <div class="io-box">
+                        <label>输入</label>
+                        <textarea id="input" placeholder="在此输入要处理的文本..."></textarea>
+                        <button id="clear-input" class="clear-btn">清空</button>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="io-box">
+                        <label>输出</label>
+                        <textarea id="output" readonly placeholder="结果将显示在这里..."></textarea>
+                        <button id="copy-output" class="copy-btn">复制</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="image-tab" class="tab-content">
+                <div class="image-tool-selector">
+                    <button class="image-tool-btn active" data-tool="image-to-base64">图片转 Base64</button>
+                    <button class="image-tool-btn" data-tool="base64-to-image">Base64 转图片</button>
+                </div>
+
+                <div id="image-to-base64-panel" class="image-panel active">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">📁</div>
+                        <p>点击或拖拽图片到此处</p>
+                        <input type="file" id="image-input" accept="image/*">
+                    </div>
+                    <div class="image-preview" id="image-preview-container" style="display: none;">
+                        <img id="image-preview" alt="预览">
+                    </div>
+                    <div class="io-box" style="margin-top: 20px;">
+                        <label>Base64 输出</label>
+                        <textarea id="base64-output" readonly placeholder="Base64 编码将显示在这里..."></textarea>
+                        <button id="copy-base64" class="copy-btn">复制</button>
+                    </div>
+                </div>
+
+                <div id="base64-to-image-panel" class="image-panel">
+                    <div class="io-box">
+                        <label>输入 Base64</label>
+                        <textarea id="base64-input" placeholder="在此输入 Base64 编码..."></textarea>
+                    </div>
+                    <button id="convert-to-image" class="action-btn primary">
+                        转换为图片
+                        <div class="hoverEffect">
+                            <div></div>
+                        </div>
+                    </button>
+                    <div class="image-output" id="image-output-container" style="display: none;">
+                        <img id="image-output" alt="转换结果">
+                        <a id="download-image" class="download-btn" download="converted-image.png">
+                            下载图片
+                            <div class="hoverEffect">
+                                <div></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Made with ❤️ | 安全、快速、本地处理</p>
+            <p class="performance-note">
+                <strong>性能模式：</strong>
+                ✨ 有特效版 - 华丽动画效果 |
+                🚀 无特效版 - 低GPU消耗
+            </p>
+        </footer>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
