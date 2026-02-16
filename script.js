@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     initTextTools();
     initImageTools();
+    initFPSCounter();
     
     performance.mark('app-init-end');
     performance.measure('app-init', 'app-init-start', 'app-init-end');
@@ -90,6 +91,7 @@ function applyEffects(version) {
             stylesheet.href = 'style.css';
         }
     }
+    startFPSCounter(version);
 }
 
 function initTheme() {
@@ -522,6 +524,81 @@ darkModeMediaQuery.addEventListener('change', () => {
         applyTheme('system');
     }
 });
+
+let fpsCounterInterval = null;
+let fpsRAFId = null;
+
+function initFPSCounter() {
+    const currentEffects = localStorage.getItem('effects') || 'effects';
+    startFPSCounter(currentEffects);
+}
+
+function startFPSCounter(version) {
+    stopFPSCounter();
+    
+    if (version === 'effects') {
+        startFPSWithRAF();
+    } else {
+        startFPSWithInterval();
+    }
+}
+
+function stopFPSCounter() {
+    if (fpsRAFId) {
+        cancelAnimationFrame(fpsRAFId);
+        fpsRAFId = null;
+    }
+    if (fpsCounterInterval) {
+        clearInterval(fpsCounterInterval);
+        fpsCounterInterval = null;
+    }
+}
+
+function startFPSWithRAF() {
+    let lastTime = performance.now();
+    let frameCount = 0;
+    const fpsCounter = document.getElementById('fps-counter');
+    
+    function update() {
+        const now = performance.now();
+        frameCount++;
+        
+        if (now - lastTime >= 1000) {
+            const fps = Math.round(frameCount * 1000 / (now - lastTime));
+            if (fpsCounter) {
+                fpsCounter.textContent = `${fps} FPS (动画帧)`;
+            }
+            frameCount = 0;
+            lastTime = now;
+        }
+        
+        fpsRAFId = requestAnimationFrame(update);
+    }
+    
+    update();
+}
+
+function startFPSWithInterval() {
+    let lastTime = Date.now();
+    let frameCount = 0;
+    const fpsCounter = document.getElementById('fps-counter');
+    
+    fpsCounterInterval = setInterval(() => {
+        const now = Date.now();
+        const fps = Math.round(frameCount * 1000 / (now - lastTime));
+        if (fpsCounter) {
+            fpsCounter.textContent = `${fps} FPS (定时)`;
+        }
+        frameCount = 0;
+        lastTime = now;
+    }, 1000);
+    
+    function countFrame() {
+        frameCount++;
+        requestAnimationFrame(countFrame);
+    }
+    countFrame();
+}
 
 if (window.performance && window.performance.navigation) {
     const nav = performance.getEntriesByType('navigation')[0];
