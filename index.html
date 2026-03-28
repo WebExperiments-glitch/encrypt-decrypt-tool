@@ -5,20 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>加密解密工具</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-no-effects.css">
 </head>
 <body>
     <div id="fps-counter" class="fps-counter"></div>
-    <div id="warning-popup" class="warning-popup">
-        <div class="popup-content">
-            <h2>⚠️⚠️⚠️ 性能警告</h2>
-            <p>由于源网站的CSS特效太多，消耗了太多CSS动画（英特尔酷睿Ultra5 125H 核显GPU占用&lt;90%，若没有太多GPU资源，请选择无特效版）</p>
-            <div class="popup-buttons">
-                <button id="effects-version" class="popup-btn effects">有特效版</button>
-                <button id="no-effects-version" class="popup-btn no-effects">无特效版</button>
-            </div>
-        </div>
-    </div>
     <div class="container">
         <header>
             <h1 class="title">🔐 加密解密工具</h1>
@@ -26,13 +16,14 @@
                 <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
                 <button class="theme-btn" data-theme="dark" title="深色模式">🌙</button>
                 <button class="theme-btn" data-theme="system" title="跟随系统">💻</button>
-                <button id="toggle-effects" class="theme-btn" title="切换特效版本">✨</button>
+                <button id="toggle-language" class="theme-btn" title="切换语言">🌍</button>
             </div>
         </header>
 
         <nav class="tabs">
             <button class="tab-btn active" data-tab="text">文本加密</button>
             <button class="tab-btn" data-tab="image">图片处理</button>
+            <button class="tab-btn" data-tab="audio">音频处理</button>
         </nav>
 
         <main class="content">
@@ -78,6 +69,7 @@
             </section>
 
             <section id="image-tab" class="tab-content">
+                <p class="note-text">📝 提示：Base64 编码后文件体积会增大约 33%，这是正常现象</p>
                 <div class="image-tool-selector">
                     <button class="image-tool-btn active" data-tool="image-to-base64">图片转 Base64</button>
                     <button class="image-tool-btn" data-tool="base64-to-image">Base64 转图片</button>
@@ -121,19 +113,89 @@
                     </div>
                 </div>
             </section>
+
+            <section id="audio-tab" class="tab-content">
+                <p class="note-text">📝 提示：Base64 编码后文件体积会增大约 33%，这是正常现象</p>
+                <div class="audio-tool-selector">
+                    <button class="audio-tool-btn active" data-tool="audio-to-base64">音频转 Base64</button>
+                    <button class="audio-tool-btn" data-tool="base64-to-audio">Base64 转音频</button>
+                </div>
+
+                <div id="audio-to-base64-panel" class="audio-panel active">
+                    <div class="upload-area" id="audio-upload-area">
+                        <div class="upload-icon">🎵</div>
+                        <p>点击或拖拽音频文件到此处（MP3、WAV、OGG等）</p>
+                        <input type="file" id="audio-input" accept="audio/*">
+                    </div>
+                    <div class="audio-preview" id="audio-preview-container" style="display: none;">
+                        <audio id="audio-preview" controls></audio>
+                    </div>
+                    <div class="io-box" style="margin-top: 20px;">
+                        <label>Base64 输出</label>
+                        <textarea id="audio-base64-output" readonly placeholder="Base64 编码将显示在这里..."></textarea>
+                        <button id="copy-audio-base64" class="copy-btn">复制</button>
+                    </div>
+                </div>
+
+                <div id="base64-to-audio-panel" class="audio-panel">
+                    <div class="io-box">
+                        <label>输入 Base64</label>
+                        <textarea id="audio-base64-input" placeholder="在此输入 Base64 编码..."></textarea>
+                    </div>
+                    <button id="convert-to-audio" class="action-btn primary">
+                        转换为音频
+                        <div class="hoverEffect">
+                            <div></div>
+                        </div>
+                    </button>
+                    <div class="audio-output" id="audio-output-container" style="display: none;">
+                        <audio id="audio-output" controls></audio>
+                        <a id="download-audio" class="download-btn" download="converted-audio.mp3">
+                            下载音频
+                            <div class="hoverEffect">
+                                <div></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <footer>
             <p>Made with ❤️ | 安全、快速、本地处理</p>
-            <p class="performance-note">
-                <strong>性能模式：</strong>
-                ✨ 有特效版 - 华丽动画效果 |
-                🚀 无特效版 - 低GPU消耗
+            <p class="version-info">
+                <strong>v0.3.1</strong>：移除特效版，无特效版改为正常版
+                <span id="show-versions" class="version-link">更多版本介绍</span>
             </p>
         </footer>
     </div>
 
     <div id="toast" class="toast"></div>
+
+    <div id="version-popup" class="version-popup">
+        <div class="version-content">
+            <span id="close-versions" class="close-btn">&times;</span>
+            <h2>📋 版本历史</h2>
+            <div class="version-list">
+                <div class="version-item">
+                    <span class="version-tag">v0.3.1</span>
+                    <span class="version-desc">移除特效版，无特效版改为正常版</span>
+                </div>
+                <div class="version-item">
+                    <span class="version-tag">v0.3</span>
+                    <span class="version-desc">更新了音频处理模块</span>
+                </div>
+                <div class="version-item">
+                    <span class="version-tag">v0.2</span>
+                    <span class="version-desc">更新添加FPS帧数模块</span>
+                </div>
+                <div class="version-item">
+                    <span class="version-tag">v0.1</span>
+                    <span class="version-desc">为初始版本，拥有文件加密和图像处理</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

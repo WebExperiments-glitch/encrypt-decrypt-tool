@@ -226,6 +226,20 @@ header {
     z-index: 5;
 }
 
+.note-text {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 12px 20px;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid var(--primary-color);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 5;
+    transition: all 0.2s ease;
+}
+
 .tool-selector {
     margin-bottom: 30px;
     position: relative;
@@ -469,6 +483,67 @@ header {
     color: white;
 }
 
+.audio-tool-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 5;
+}
+
+.audio-tool-btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 16px 28px;
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-color);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+    position: relative;
+    z-index: 5;
+}
+
+.audio-tool-btn:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.audio-tool-btn.active {
+    border: 2px solid var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    color: white;
+}
+
+.audio-panel {
+    display: none;
+}
+
+.audio-panel.active {
+    display: block;
+    position: relative;
+    z-index: 5;
+}
+
+.audio-preview, .audio-output {
+    margin-top: 24px;
+    text-align: center;
+    position: relative;
+    z-index: 5;
+}
+
+.audio-preview audio, .audio-output audio {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+}
+
 .image-panel {
     display: none;
 }
@@ -670,6 +745,14 @@ footer::before {
         min-width: auto;
     }
     
+    .audio-tool-selector {
+        flex-direction: column;
+    }
+    
+    .audio-tool-btn {
+        min-width: auto;
+    }
+    
     .tabs {
         flex-direction: column;
     }
@@ -776,6 +859,120 @@ footer::before {
 
 .popup-btn.no-effects:active {
     transform: scale(0.97);
+}
+
+.version-info {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.version-link {
+    color: var(--primary-color);
+    cursor: pointer;
+    text-decoration: underline;
+    margin-left: 10px;
+    transition: all 0.2s ease;
+}
+
+.version-link:hover {
+    color: #8b5cf6;
+}
+
+.version-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.version-content {
+    background: var(--surface-color-solid);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    border: 2px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.version-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    color: var(--primary-color);
+}
+
+.version-content h2 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    color: var(--text-color);
+    font-weight: 800;
+}
+
+.version-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.version-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(99, 102, 241, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    transition: all 0.2s ease;
+}
+
+.version-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary-color);
+}
+
+.version-tag {
+    display: inline-block;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    color: white;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.version-desc {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
 }
 
 .fps-counter {

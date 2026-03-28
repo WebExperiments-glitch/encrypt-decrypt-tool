@@ -1,12 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     performance.mark('app-init-start');
     
-    initEffects();
     initTheme();
     initTabs();
     initTextTools();
     initImageTools();
+    initAudioTools();
     initFPSCounter();
+    initVersionPopup();
+    initLanguageToggle();
     
     performance.mark('app-init-end');
     performance.measure('app-init', 'app-init-start', 'app-init-end');
@@ -19,86 +21,14 @@ const DOMCache = {
     themeBtns: null,
     tabBtns: null,
     imageToolBtns: null,
-    warningPopup: null,
-    effectsBtn: null,
-    noEffectsBtn: null
+    audioToolBtns: null
 };
-
-function initEffects() {
-    const savedEffects = localStorage.getItem('effects');
-    const stylesheet = document.querySelector('link[rel="stylesheet"]');
-    
-    if (savedEffects) {
-        applyEffects(savedEffects);
-    } else {
-        DOMCache.warningPopup = document.getElementById('warning-popup');
-        DOMCache.effectsBtn = document.getElementById('effects-version');
-        DOMCache.noEffectsBtn = document.getElementById('no-effects-version');
-        
-        if (DOMCache.warningPopup) {
-            DOMCache.warningPopup.style.display = 'flex';
-        }
-        
-        if (DOMCache.effectsBtn) {
-            DOMCache.effectsBtn.addEventListener('click', () => {
-                selectEffects('effects');
-            });
-        }
-        
-        if (DOMCache.noEffectsBtn) {
-            DOMCache.noEffectsBtn.addEventListener('click', () => {
-                selectEffects('no-effects');
-            });
-        }
-    }
-    
-    initEffectsToggle();
-}
-
-function initEffectsToggle() {
-    const toggleBtn = document.getElementById('toggle-effects');
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            const currentEffects = localStorage.getItem('effects') || 'effects';
-            const newEffects = currentEffects === 'effects' ? 'no-effects' : 'effects';
-            
-            localStorage.setItem('effects', newEffects);
-            applyEffects(newEffects);
-            
-            showToast(newEffects === 'effects' ? '已切换到有特效版' : '已切换到无特效版');
-        });
-    }
-}
-
-function selectEffects(version) {
-    localStorage.setItem('effects', version);
-    applyEffects(version);
-    
-    if (DOMCache.warningPopup) {
-        DOMCache.warningPopup.style.animation = 'popupFadeIn 0.3s ease-out reverse';
-        setTimeout(() => {
-            DOMCache.warningPopup.style.display = 'none';
-        }, 300);
-    }
-}
-
-function applyEffects(version) {
-    const stylesheet = document.querySelector('link[rel="stylesheet"]');
-    if (stylesheet) {
-        if (version === 'no-effects') {
-            stylesheet.href = 'style-no-effects.css';
-        } else {
-            stylesheet.href = 'style.css';
-        }
-    }
-    startFPSCounter(version);
-}
 
 function initTheme() {
     const savedTheme = localStorage.getItem('theme') || 'dark';
     applyTheme(savedTheme);
     
-    DOMCache.themeBtns = document.querySelectorAll('.theme-btn');
+    DOMCache.themeBtns = document.querySelectorAll('.theme-btn[data-theme]');
     DOMCache.themeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const theme = btn.dataset.theme;
@@ -526,56 +456,21 @@ darkModeMediaQuery.addEventListener('change', () => {
 });
 
 let fpsCounterInterval = null;
-let fpsRAFId = null;
 
 function initFPSCounter() {
-    const currentEffects = localStorage.getItem('effects') || 'effects';
-    startFPSCounter(currentEffects);
+    startFPSCounter();
 }
 
-function startFPSCounter(version) {
+function startFPSCounter() {
     stopFPSCounter();
-    
-    if (version === 'effects') {
-        startFPSWithRAF();
-    } else {
-        startFPSWithInterval();
-    }
+    startFPSWithInterval();
 }
 
 function stopFPSCounter() {
-    if (fpsRAFId) {
-        cancelAnimationFrame(fpsRAFId);
-        fpsRAFId = null;
-    }
     if (fpsCounterInterval) {
         clearInterval(fpsCounterInterval);
         fpsCounterInterval = null;
     }
-}
-
-function startFPSWithRAF() {
-    let lastTime = performance.now();
-    let frameCount = 0;
-    const fpsCounter = document.getElementById('fps-counter');
-    
-    function update() {
-        const now = performance.now();
-        frameCount++;
-        
-        if (now - lastTime >= 1000) {
-            const fps = Math.round(frameCount * 1000 / (now - lastTime));
-            if (fpsCounter) {
-                fpsCounter.textContent = `${fps} FPS (动画帧)`;
-            }
-            frameCount = 0;
-            lastTime = now;
-        }
-        
-        fpsRAFId = requestAnimationFrame(update);
-    }
-    
-    update();
 }
 
 function startFPSWithInterval() {
@@ -587,7 +482,7 @@ function startFPSWithInterval() {
         const now = Date.now();
         const fps = Math.round(frameCount * 1000 / (now - lastTime));
         if (fpsCounter) {
-            fpsCounter.textContent = `${fps} FPS (定时)`;
+            fpsCounter.textContent = `${fps} FPS`;
         }
         frameCount = 0;
         lastTime = now;
@@ -598,6 +493,157 @@ function startFPSWithInterval() {
         requestAnimationFrame(countFrame);
     }
     countFrame();
+}
+
+function initAudioTools() {
+    DOMCache.audioToolBtns = document.querySelectorAll('.audio-tool-btn');
+    DOMCache.audioToolBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tool = btn.dataset.tool;
+            
+            DOMCache.audioToolBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            document.querySelectorAll('.audio-panel').forEach(p => p.classList.remove('active'));
+            const panel = document.getElementById(`${tool}-panel`);
+            if (panel) panel.classList.add('active');
+        });
+    });
+    
+    initAudioToBase64();
+    initBase64ToAudio();
+}
+
+function initAudioToBase64() {
+    const uploadArea = document.getElementById('audio-upload-area');
+    const audioInput = document.getElementById('audio-input');
+    const audioPreview = document.getElementById('audio-preview');
+    const audioPreviewContainer = document.getElementById('audio-preview-container');
+    const base64Output = document.getElementById('audio-base64-output');
+    const copyBase64Btn = document.getElementById('copy-audio-base64');
+    
+    if (uploadArea) {
+        uploadArea.addEventListener('click', () => audioInput && audioInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                handleAudioFile(e.dataTransfer.files[0]);
+            }
+        });
+    }
+    
+    if (audioInput) {
+        audioInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleAudioFile(e.target.files[0]);
+            }
+        });
+    }
+    
+    if (copyBase64Btn) {
+        copyBase64Btn.addEventListener('click', () => {
+            copyToClipboard(base64Output.value);
+        });
+    }
+    
+    function handleAudioFile(file) {
+        if (!file.type.startsWith('audio/')) {
+            showToast('请选择音频文件');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64 = e.target.result;
+            if (base64Output) base64Output.value = base64;
+            if (audioPreview) audioPreview.src = base64;
+            if (audioPreviewContainer) audioPreviewContainer.style.display = 'block';
+            showToast('音频转换成功');
+        };
+        reader.onerror = () => {
+            showToast('音频读取失败');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function initBase64ToAudio() {
+    const base64Input = document.getElementById('audio-base64-input');
+    const convertBtn = document.getElementById('convert-to-audio');
+    const audioOutput = document.getElementById('audio-output');
+    const audioOutputContainer = document.getElementById('audio-output-container');
+    const downloadBtn = document.getElementById('download-audio');
+    
+    if (convertBtn) {
+        convertBtn.addEventListener('click', () => {
+            const base64 = base64Input.value.trim();
+            if (!base64) {
+                showToast('请输入 Base64 编码');
+                return;
+            }
+            
+            if (audioOutput) {
+                audioOutput.onloadedmetadata = () => {
+                    if (downloadBtn) downloadBtn.href = base64;
+                    if (audioOutputContainer) audioOutputContainer.style.display = 'block';
+                    showToast('音频转换成功');
+                };
+                
+                audioOutput.onerror = () => {
+                    showToast('转换失败: 无效的 Base64 编码');
+                    if (audioOutputContainer) audioOutputContainer.style.display = 'none';
+                };
+                
+                audioOutput.src = base64;
+            }
+        });
+    }
+}
+
+function initVersionPopup() {
+    const showVersionsBtn = document.getElementById('show-versions');
+    const versionPopup = document.getElementById('version-popup');
+    const closeVersionsBtn = document.getElementById('close-versions');
+    
+    if (showVersionsBtn && versionPopup) {
+        showVersionsBtn.addEventListener('click', () => {
+            versionPopup.style.display = 'flex';
+        });
+    }
+    
+    if (closeVersionsBtn && versionPopup) {
+        closeVersionsBtn.addEventListener('click', () => {
+            versionPopup.style.display = 'none';
+        });
+    }
+    
+    if (versionPopup) {
+        versionPopup.addEventListener('click', (e) => {
+            if (e.target === versionPopup) {
+                versionPopup.style.display = 'none';
+            }
+        });
+    }
+}
+
+function initLanguageToggle() {
+    const languageBtn = document.getElementById('toggle-language');
+    if (languageBtn) {
+        languageBtn.addEventListener('click', () => {
+            showToast('本功能还在开发中，请稍后一段时间在v0.3.1即可拥有一种语言');
+        });
+    }
 }
 
 if (window.performance && window.performance.navigation) {
