@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>加密解密工具</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
-    <link rel="stylesheet" href="style-no-effects.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="fps-counter" class="fps-counter"></div>
@@ -16,7 +16,6 @@
                 <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
                 <button class="theme-btn" data-theme="dark" title="深色模式">🌙</button>
                 <button class="theme-btn" data-theme="system" title="跟随系统">💻</button>
-                <button id="toggle-language" class="theme-btn" title="切换语言">🌍</button>
             </div>
         </header>
 
@@ -35,6 +34,7 @@
                         <option value="html">HTML 实体</option>
                         <option value="hex">Hex 十六进制</option>
                         <option value="binary">二进制</option>
+                        <option value="morse">摩尔斯电码</option>
                     </select>
                 </div>
 
@@ -164,7 +164,7 @@
         <footer>
             <p>Made with ❤️ | 安全、快速、本地处理</p>
             <p class="version-info">
-                <strong>v0.3.1</strong>：移除特效版，无特效版改为正常版
+                <strong>v0.3.2</strong>：全面安全加固、代码清理与体验优化
                 <span id="show-versions" class="version-link">更多版本介绍</span>
             </p>
         </footer>
@@ -177,6 +177,10 @@
             <span id="close-versions" class="close-btn">&times;</span>
             <h2>📋 版本历史</h2>
             <div class="version-list">
+                <div class="version-item">
+                    <span class="version-tag">v0.3.2</span>
+                    <span class="version-desc">全面安全加固、代码清理与体验优化</span>
+                </div>
                 <div class="version-item">
                     <span class="version-tag">v0.3.1</span>
                     <span class="version-desc">移除特效版，无特效版改为正常版</span>

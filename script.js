@@ -8,7 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
     initAudioTools();
     initFPSCounter();
     initVersionPopup();
-    initLanguageToggle();
+    
+    // Ctrl+Shift+F 切换 FPS 计数器
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+            e.preventDefault();
+            toggleFPSCounter();
+        }
+    });
     
     performance.mark('app-init-end');
     performance.measure('app-init', 'app-init-start', 'app-init-end');
@@ -138,6 +145,8 @@ function encode(text, tool) {
                 return textToHex(text);
             case 'binary':
                 return textToBinary(text);
+            case 'morse':
+                return textToMorse(text);
             default:
                 return text;
         }
@@ -165,6 +174,8 @@ function decode(text, tool) {
                 return hexToText(text);
             case 'binary':
                 return binaryToText(text);
+            case 'morse':
+                return morseToText(text);
             default:
                 return text;
         }
@@ -219,11 +230,9 @@ function htmlEncode(text) {
 }
 
 function htmlDecode(text) {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = text.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '')
-                            .replace(/<iframe[^>]*>([\S\s]*?)<\/iframe>/gmi, '')
-                            .replace(/on\w+="[^"]*"/gmi, '');
-    return tempDiv.textContent || tempDiv.innerText || '';
+    const txt = document.createElement('textarea');
+    txt.innerHTML = text;
+    return txt.value;
 }
 
 function textToHex(text) {
@@ -292,6 +301,52 @@ function binaryToText(binary) {
     
     const decoder = new TextDecoder();
     return decoder.decode(bytes);
+}
+
+const morseMap = {
+    'A': '.-',   'B': '-...', 'C': '-.-.', 'D': '-..',  'E': '.',
+    'F': '..-.', 'G': '--.',  'H': '....', 'I': '..',   'J': '.---',
+    'K': '-.-',  'L': '.-..', 'M': '--',   'N': '-.',   'O': '---',
+    'P': '.--.', 'Q': '--.-', 'R': '.-.',  'S': '...',  'T': '-',
+    'U': '..-',  'V': '...-', 'W': '.--',  'X': '-..-', 'Y': '-.--',
+    'Z': '--..',
+    '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
+    '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.'
+};
+
+const reverseMorseMap = {};
+for (const [key, value] of Object.entries(morseMap)) {
+    reverseMorseMap[value] = key;
+}
+
+function textToMorse(text) {
+    const upper = text.toUpperCase();
+    let result = '';
+    for (let i = 0; i < upper.length; i++) {
+        const ch = upper[i];
+        if (ch === ' ') {
+            result += '/ ';
+        } else if (morseMap[ch]) {
+            result += morseMap[ch] + ' ';
+        }
+    }
+    return result.trim();
+}
+
+function morseToText(morse) {
+    if (!morse || !morse.trim()) return '';
+    const tokens = morse.trim().split(/\s+/);
+    let result = '';
+    for (const token of tokens) {
+        if (token === '/') {
+            result += ' ';
+        } else if (reverseMorseMap[token]) {
+            result += reverseMorseMap[token];
+        } else {
+            throw new Error('无效的摩尔斯电码: ' + token);
+        }
+    }
+    return result;
 }
 
 function initImageTools() {
@@ -393,6 +448,8 @@ function initBase64ToImage() {
             }
             
             if (imageOutput) {
+                imageOutput.onload = null;
+                imageOutput.onerror = null;
                 imageOutput.onload = () => {
                     if (downloadBtn) downloadBtn.href = base64;
                     if (imageOutputContainer) imageOutputContainer.style.display = 'block';
@@ -456,9 +513,29 @@ darkModeMediaQuery.addEventListener('change', () => {
 });
 
 let fpsCounterInterval = null;
+let fpsCounterRunning = false;
 
 function initFPSCounter() {
-    startFPSCounter();
+    // FPS 计数器默认隐藏，可通过 Ctrl+Shift+F 切换
+    const fpsCounter = document.getElementById('fps-counter');
+    if (fpsCounter) {
+        fpsCounter.style.display = 'none';
+    }
+}
+
+function toggleFPSCounter() {
+    const fpsCounter = document.getElementById('fps-counter');
+    if (!fpsCounter) return;
+    
+    if (fpsCounterRunning) {
+        fpsCounter.style.display = 'none';
+        stopFPSCounter();
+        fpsCounterRunning = false;
+    } else {
+        fpsCounter.style.display = 'block';
+        startFPSCounter();
+        fpsCounterRunning = true;
+    }
 }
 
 function startFPSCounter() {
@@ -594,6 +671,8 @@ function initBase64ToAudio() {
             }
             
             if (audioOutput) {
+                audioOutput.onloadedmetadata = null;
+                audioOutput.onerror = null;
                 audioOutput.onloadedmetadata = () => {
                     if (downloadBtn) downloadBtn.href = base64;
                     if (audioOutputContainer) audioOutputContainer.style.display = 'block';
@@ -633,15 +712,6 @@ function initVersionPopup() {
             if (e.target === versionPopup) {
                 versionPopup.style.display = 'none';
             }
-        });
-    }
-}
-
-function initLanguageToggle() {
-    const languageBtn = document.getElementById('toggle-language');
-    if (languageBtn) {
-        languageBtn.addEventListener('click', () => {
-            showToast('本功能还在开发中，请稍后一段时间在v0.3.1即可拥有一种语言');
         });
     }
 }
