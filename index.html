@@ -23,6 +23,7 @@
             <button class="tab-btn active" data-tab="text">文本加密</button>
             <button class="tab-btn" data-tab="image">图片处理</button>
             <button class="tab-btn" data-tab="audio">音频处理</button>
+            <button class="tab-btn" data-tab="file">文件转换</button>
         </nav>
 
         <main class="content">
@@ -35,6 +36,11 @@
                         <option value="hex">Hex 十六进制</option>
                         <option value="binary">二进制</option>
                         <option value="morse">摩尔斯电码</option>
+                        <option value="md5">MD5</option>
+                        <option value="sha1">SHA-1</option>
+                        <option value="sha256">SHA-256</option>
+                        <option value="sha512">SHA-512</option>
+                        <option value="aes">AES 加密/解密</option>
                     </select>
                 </div>
 
@@ -51,6 +57,11 @@
                             <div></div>
                         </div>
                     </button>
+                </div>
+
+                <div id="aes-key-box" class="io-box aes-key-box" style="display: none;">
+                    <label>AES 密码</label>
+                    <input type="password" id="aes-key" placeholder="输入 AES 加密/解密密钥">
                 </div>
 
                 <div class="io-container">
@@ -159,12 +170,55 @@
                     </div>
                 </div>
             </section>
+
+            <section id="file-tab" class="tab-content">
+                <p class="note-text">📝 提示：Base64 编码后文件体积会增大约 33%，这是正常现象</p>
+                <div class="file-tool-selector">
+                    <button class="file-tool-btn active" data-tool="file-to-base64">文件转 Base64</button>
+                    <button class="file-tool-btn" data-tool="base64-to-file">Base64 转文件</button>
+                </div>
+
+                <div id="file-to-base64-panel" class="file-panel active">
+                    <div class="upload-area" id="file-upload-area">
+                        <div class="upload-icon">📎</div>
+                        <p>点击或拖拽任意文件到此处（PDF、ZIP、TXT、任意格式）</p>
+                        <input type="file" id="file-input">
+                    </div>
+                    <div class="file-info" id="file-info" style="display: none;">
+                        <span id="file-name"></span>
+                        <span id="file-size"></span>
+                        <span id="file-type"></span>
+                    </div>
+                    <div class="io-box" style="margin-top: 20px;">
+                        <label>Base64 输出</label>
+                        <textarea id="file-base64-output" readonly placeholder="Base64 编码将显示在这里..."></textarea>
+                        <button id="copy-file-base64" class="copy-btn">复制</button>
+                    </div>
+                </div>
+
+                <div id="base64-to-file-panel" class="file-panel">
+                    <div class="io-box">
+                        <label>输入 Base64</label>
+                        <textarea id="file-base64-input" placeholder="在此输入 Base64 编码..."></textarea>
+                    </div>
+                    <div class="io-box file-meta-box">
+                        <label>文件名（可选，默认 download.bin）</label>
+                        <input type="text" id="file-download-name" placeholder="example.pdf">
+                    </div>
+                    <button id="convert-to-file" class="action-btn primary">
+                        转换为文件
+                        <div class="hoverEffect">
+                            <div></div>
+                        </div>
+                    </button>
+                </div>
+            </section>
         </main>
 
         <footer>
             <p>Made with ❤️ | 安全、快速、本地处理</p>
             <p class="version-info">
-                <strong>v0.3.2</strong>：全面安全加固、代码清理与体验优化
+                <strong>v0.3.3</strong>：新增哈希、AES 加密、通用文件转换
                 <span id="show-versions" class="version-link">更多版本介绍</span>
             </p>
         </footer>
@@ -177,6 +231,10 @@
             <span id="close-versions" class="close-btn">&times;</span>
             <h2>📋 版本历史</h2>
             <div class="version-list">
+                <div class="version-item">
+                    <span class="version-tag">v0.3.3</span>
+                    <span class="version-desc">新增哈希、AES 加密、通用文件转换</span>
+                </div>
                 <div class="version-item">
                     <span class="version-tag">v0.3.2</span>
                     <span class="version-desc">全面安全加固、代码清理与体验优化</span>

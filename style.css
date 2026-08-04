@@ -410,8 +410,37 @@ header {
     z-index: 10;
 }
 
+.io-box input[type="password"],
+.io-box input[type="text"] {
+    width: 100%;
+    padding: 14px 0;
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    background: transparent;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+    position: relative;
+    z-index: 10;
+    transition: var(--transition-default);
+}
+
+.io-box input[type="password"]:focus,
+.io-box input[type="text"]:focus {
+    outline: none;
+    border-bottom-color: var(--primary-color);
+}
+
 .io-box textarea:focus {
     outline: none;
+}
+
+.aes-key-box {
+    margin-bottom: 24px;
+}
+
+.file-meta-box {
+    margin-bottom: 24px;
 }
 
 .clear-btn, .copy-btn {
@@ -520,6 +549,73 @@ header {
     border: 2px solid var(--primary-color);
     background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
     color: white;
+}
+
+.file-tool-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 5;
+}
+
+.file-tool-btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 16px 28px;
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-color);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: var(--transition-default);
+    box-shadow: var(--shadow);
+    position: relative;
+    z-index: 5;
+}
+
+.file-tool-btn:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.file-tool-btn.active {
+    border: 2px solid var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    color: white;
+}
+
+.file-panel {
+    display: none;
+}
+
+.file-panel.active {
+    display: block;
+    position: relative;
+    z-index: 5;
+}
+
+.file-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.file-info span {
+    background: var(--surface-color);
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
 }
 
 .audio-panel {
